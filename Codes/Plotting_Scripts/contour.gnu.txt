@@ -1,0 +1,17 @@
+clear
+set dgrid3d
+set style textbox opaque margins  0.5,  0.5 noborder
+#set view map
+set contour base
+set pm3d at b
+set palette gray
+set cntrlabel  format '%8.3g' font ',7' start 5 interval 20
+set cntrparam levels auto 15
+set style data lines
+unset key
+#unset surface
+set surface
+splot 'f70.test5.out' u 3:2:21 w l lt rgb "violet"
+set terminal svg enhanced
+set output 'contour_test5.svg'
+replot

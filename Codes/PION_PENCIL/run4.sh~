@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Power
+p_ini=1.5	
+p_end=1.5
+p_inc=0.1
+
+# Temperature
+t_ini=0.8
+t_end=2.0
+t_inc=0.1
+
+# Density
+d_ini=0.30
+d_end=0.65
+d_inc=0.05
+
+# Other data
+user="dgallart"
+shot=86614
+namelist=13
+energy=1.0
+output="out"
+
+# Binary Folders
+nbp2=/home/dgallart/work/nbp22.exp
+pion=/home/dgallart/work/PION_MERVI4
+
+power=`seq -f"%.2f" $p_ini $p_inc $p_end`
+temper=`seq -f"%.2f" $t_ini $t_inc $t_end`
+density=`seq -f"%.2f" $d_ini $d_inc $d_end`
+
+if [[ $# != 1 ]]; then
+   echo "ERROR! You have to introduce the name of the test"
+   exit
+fi
+
+# Preparation of the environment
+mkdir -p $1
+cd $1
+ln -s $nbp2/nbp2 .
+ln -s $nbp2/fort.32 .
+ln -s $nbp2/fort.14 .
+ln -s $pion/pion .
+ln -s $pion/inputhn .
+ln -s $pion/powinjectednou.data .
+ln -s $pion/eninjected.data .
+ln -s $pion/volumedif.data .
+ln -s $pion/input2 .
+ln -s $pion/dcanaly.dat .
+a=0
+for p in $power; do
+   for t in $temper; do
+      for d in $density; do
+          test="${p}_${t}_${d}"
+	  echo "Run Power=$p Temp=$t Dens=$d"
+          echo "================================================" 
+#          echo ./nbp2 -s$shot -u$user -n$namelist -e$energy -p$p -t$t -d$d
+#          ./nbp2 -s$shot -u$user -n$namelist -e$energy -p$p -t$t -d$d > debug_${test}
+          echo "-------------------------------------------------" 
+          echo ./pion ${output}_${p}_${t}_${d}
+          ./pion ${output}_${p}_${t}_${d} >> debug_${test}
+#          echo " "
+      done
+   done
+done
+
+# Ending
+cd ..
+
+echo "     "
+echo "DONE."
+
